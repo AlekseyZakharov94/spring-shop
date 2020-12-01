@@ -34,13 +34,17 @@ public class CartView extends AbstractView {
                 grid.setItems(cartService.getItems());
             });
             Button minusButton = new Button("-", a -> {
-                item.decrement();
-                grid.setItems(cartService.getItems());
+                if (item.getQuantity() > 1) {
+                    item.decrement();
+                    grid.setItems(cartService.getItems());
+                }
             });
             return new HorizontalLayout(plusButton, minusButton);
         }));
         TextField addressField = initTextFieldWithPlaceholder("Введите адрес доставки");
         TextField phoneField = initTextFieldWithPlaceholder("Введите телефон");
+        phoneField.setPattern("^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$"); //а что дальше пока не придумал=( как не допустить создание заказа при невалидном поле
+
         Button orderButton = new Button("Создать заказ", a -> {
             cartService.setAddress(addressField.getValue());
             cartService.setPhone(phoneField.getValue());
