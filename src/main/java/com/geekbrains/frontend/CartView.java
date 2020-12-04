@@ -3,10 +3,12 @@ package com.geekbrains.frontend;
 import com.geekbrains.entities.OrderItem;
 import com.geekbrains.services.CartService;
 import com.geekbrains.services.OrderService;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
@@ -17,7 +19,8 @@ public class CartView extends AbstractView {
     private final CartService cartService;
     private final OrderService orderService;
 
-    public CartView(CartService cartService, OrderService orderService) {
+    public CartView(CartService cartService,
+                    OrderService orderService) {
         this.cartService = cartService;
         this.orderService = orderService;
         initCartPage();
@@ -27,33 +30,38 @@ public class CartView extends AbstractView {
         Grid<OrderItem> grid = new Grid<>(OrderItem.class);
         grid.setItems(cartService.getItems());
         grid.setWidth("60%");
-        grid.setColumns("product", "quantity", "price");
+        grid.setColumns("product", "price", "quantity");
+
         grid.addColumn(new ComponentRenderer<>(item -> {
-            Button plusButton = new Button("+", a -> {
+            Button plusButton = new Button("+", i -> {
                 item.increment();
                 grid.setItems(cartService.getItems());
             });
-            Button minusButton = new Button("-", a -> {
-                if (item.getQuantity() > 1) {
-                    item.decrement();
-                    grid.setItems(cartService.getItems());
-                }
+
+            Button minusButton = new Button("-", i -> {
+                item.decrement();
+                grid.setItems(cartService.getItems());
             });
+
             return new HorizontalLayout(plusButton, minusButton);
         }));
-        TextField addressField = initTextFieldWithPlaceholder("Введите адрес доставки");
-        TextField phoneField = initTextFieldWithPlaceholder("Введите телефон");
-        phoneField.setPattern("^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$"); //а что дальше пока не придумал=( как не допустить создание заказа при невалидном поле
 
-        Button orderButton = new Button("Создать заказ", a -> {
+        TextField addressField = initTextFieldWithPlaceholder("Введите адрес доставки");
+        TextField phoneField = initTextFieldWithPlaceholder("Введите номер телефона");
+
+        Button toOrderButton = new Button("Создать заказ", e -> {
             cartService.setAddress(addressField.getValue());
             cartService.setPhone(phoneField.getValue());
             orderService.saveOrder();
 
-            Notification.show("Заказ успешно сохранен и передан менеджеру");
+            cartService.clear();
+            UI.getCurrent().navigate("market");
+
+            Notification.show("Заказ успешно сохранён и передан менеджеру");
         });
 
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
-        add(grid, addressField, phoneField, orderButton);
+        add(grid, addressField, phoneField, toOrderButton);
     }
+
 }
