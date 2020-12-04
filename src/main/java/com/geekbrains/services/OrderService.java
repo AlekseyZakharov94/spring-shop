@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -45,7 +44,7 @@ public class OrderService {
     }
 
     @Transactional
-    public List<Order> getByUserId(long userId) {
+    public List<Order> getByUserId(Long userId) {
         return orderRepository.findAllByUserId(userId);
     }
 
