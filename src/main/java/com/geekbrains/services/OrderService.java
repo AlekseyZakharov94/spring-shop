@@ -1,5 +1,6 @@
 package com.geekbrains.services;
 
+import com.geekbrains.aspect.Log;
 import com.geekbrains.entities.Order;
 import com.geekbrains.entities.OrderItem;
 import com.geekbrains.entities.User;
@@ -28,6 +29,7 @@ public class OrderService {
         this.orderItemRepository = orderItemRepository;
     }
 
+    @Log
     public void saveOrder() {
         User user = userService.findById(1L);
 
