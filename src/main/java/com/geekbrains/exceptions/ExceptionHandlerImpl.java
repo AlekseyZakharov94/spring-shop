@@ -21,4 +21,9 @@ public class ExceptionHandlerImpl {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(NotFoundException.class)
+    public  ResponseEntity<Object> methodArgumentNotValidException(NotFoundException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
 }

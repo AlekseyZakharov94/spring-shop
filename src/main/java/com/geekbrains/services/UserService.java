@@ -6,10 +6,7 @@ import com.geekbrains.entities.Role;
 import com.geekbrains.entities.User;
 import com.geekbrains.exceptions.ManagerIsEarlierThanNeedException;
 import com.geekbrains.exceptions.UnknownUserTypeException;
-import com.geekbrains.repositories.RoleRepository;
 import com.geekbrains.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -71,6 +68,14 @@ public class UserService {
     }
 
     public List<User> getAllUsersWithType(UserType userType) {
+        Role role;
+        if (userType == UserType.MANAGER) {
+            role = roleService.getByName("ROLE_MANAGER");
+            return userRepository.findAllByRoles(role);
+        } else if (userType == UserType.USER) {
+            role = roleService.getByName("ROLE_CUSTOMER");
+            return userRepository.findAllByRoles(role);
+        }
         return userRepository.findAll();
     }
 }
