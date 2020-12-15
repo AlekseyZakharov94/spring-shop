@@ -17,5 +17,5 @@ public class UserDto {
     @NotNull(message = "Возраст пользователя должен быть не пустым.")
     private Integer age;
     @NotNull(message = "Тип пользователя не указан.")
-    private UserType userType;
+    private RoleDto roleDto;
 }

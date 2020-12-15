@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name =  "orders_items")
+@Table(name =  "items")
 @Data
 public class OrderItem {
     @Id
@@ -20,8 +20,21 @@ public class OrderItem {
     private BigDecimal price;
     private int quantity;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+    public OrderItem() {}
 
+    public OrderItem(Product product) {
+        this.product = product;
+        this.quantity = 1;
+        this.price = new BigDecimal(0).add(product.getPrice());
+    }
+
+    public void increment() {
+        this.quantity++;
+        this.price = new BigDecimal(this.quantity * product.getPrice().doubleValue());
+    }
+
+    public void decrement() {
+        this.quantity--;
+        this.price = new BigDecimal(this.quantity * product.getPrice().doubleValue());
+    }
 }
