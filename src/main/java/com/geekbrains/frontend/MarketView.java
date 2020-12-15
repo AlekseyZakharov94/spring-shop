@@ -3,23 +3,35 @@ package com.geekbrains.frontend;
 import com.geekbrains.entities.Product;
 import com.geekbrains.repositories.ProductRepository;
 import com.geekbrains.services.CartService;
+import com.geekbrains.specifications.ProductFilter;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.PageRequest;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Route("market")
 public class MarketView extends AbstractView {
 
     private final CartService cartService;
     private final ProductRepository productRepository;
+
+    private TextField titleTextField;
+    private TextField minPriceTextField;
+    private TextField maxPriceTextField;
+    private Grid<Product> productGrid;
+
+
     public MarketView(CartService cartService, ProductRepository productRepository) {
         this.cartService = cartService;
         this.productRepository = productRepository;
@@ -32,11 +44,8 @@ public class MarketView extends AbstractView {
         horizontalLayout.add(new Button("Корзина", a -> UI.getCurrent().navigate("cart")));
         horizontalLayout.add(new Button("Мои заказы", a -> UI.getCurrent().navigate("orders")));
 
-        horizontalLayout.add(initTextFieldWithPlaceholder("номер телефона"));
-        horizontalLayout.add(initTextFieldWithPlaceholder("пароль"));
-        horizontalLayout.add(new Button("вход", a -> System.out.println("вход")));
 
-        Grid<Product> productGrid = new Grid<>(Product.class);
+        productGrid = new Grid<>(Product.class);
         productGrid.setWidth("60%");
         productGrid.setColumns("id", "title", "price");
         productGrid.setSelectionMode(Grid.SelectionMode.MULTI);
@@ -47,6 +56,7 @@ public class MarketView extends AbstractView {
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         setHorizontalComponentAlignment(Alignment.CENTER, productGrid);
         add(horizontalLayout);
+        add(initFilterComponent());
         add(productGrid);
 
         add(new Button("Добавить в корзину", a -> {
@@ -54,6 +64,55 @@ public class MarketView extends AbstractView {
             productSet.stream().forEach(cartService::add);
             Notification.show("Товары добавлены в корзину");
         }));
+    }
+
+    private Component initFilterComponent() {
+        HorizontalLayout priceLayout = new HorizontalLayout();
+        titleTextField = initTextFieldWithPlaceholder("Название");
+        minPriceTextField = initTextFieldWithPlaceholder("Минимальная цена");
+        maxPriceTextField = initTextFieldWithPlaceholder("Максимальная цена");
+        priceLayout.add(titleTextField, minPriceTextField, maxPriceTextField);
+
+        VerticalLayout categoriesLayout = new VerticalLayout();
+        Label categoriesLabel = new Label("Категории");
+        Checkbox foodCheckbox = new Checkbox("Food");
+        Checkbox devicesCheckbox = new Checkbox("Devices");
+        categoriesLayout.add(categoriesLabel, foodCheckbox, devicesCheckbox);
+        categoriesLayout.setAlignItems(Alignment.CENTER);
+
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+        Button makeFiltersButton = new Button("Применить", a -> {
+            Map<String, String> filterMap = new HashMap<>();
+            List<String> categories = new ArrayList<>();
+            if (StringUtils.isNotEmpty(titleTextField.getValue())) {
+                filterMap.put("title", titleTextField.getValue());
+            }
+
+            if (StringUtils.isNotEmpty(minPriceTextField.getValue())) {
+                filterMap.put("min_price", minPriceTextField.getValue());
+            }
+
+            if (StringUtils.isNotEmpty(maxPriceTextField.getValue())) {
+                filterMap.put("max_price", maxPriceTextField.getValue());
+            }
+
+            if (foodCheckbox.getValue()){
+                categories.add("Food");
+            }
+
+            if(devicesCheckbox.getValue()){
+                categories.add("Devices");
+            }
+
+            productGrid.setItems(productRepository.findAll(new ProductFilter(filterMap, categories).getSpec(), PageRequest.of(0, 10)).getContent());
+        });
+
+        Button cancelFiltersButton = new Button("Сброс фильтра", a -> {
+            productGrid.setItems(productRepository.findAll());
+        });
+
+        buttonLayout.add(makeFiltersButton, cancelFiltersButton);
+        return new VerticalLayout(titleTextField, priceLayout, categoriesLayout, buttonLayout);
     }
 
 
