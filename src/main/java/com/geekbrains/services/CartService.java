@@ -12,40 +12,26 @@ import java.util.List;
 @Service
 public class CartService {
     private List<OrderItem> items;
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
     private BigDecimal price;
     private String address;
     private String phone;
 
+    public void clear() {
+        this.items = new ArrayList<>();
+    }
+
     @PostConstruct
     public void init() {
         items = new ArrayList<>();
-    }
-
-    public void add(Product product) {
-        for (OrderItem item : items) {
-            if (item.getProduct().getId().equals(product.getId())) {
-                item.increment();
-                recalculate();
-                return;
-            }
-        }
-        items.add(new OrderItem(product));
-        recalculate();
-    }
-
-    public void recalculate() {
-        price = new BigDecimal(0);
-        items.stream().forEach(item ->
-                price = price.add(item.getPrice())
-        );
-    }
-
-    public List<OrderItem> getItems() {
-        return items;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
     }
 
     public String getPhone() {
@@ -56,6 +42,10 @@ public class CartService {
         this.phone = phone;
     }
 
+    public List<OrderItem> getItems() {
+        return items;
+    }
+
     public String getAddress() {
         return address;
     }
@@ -63,4 +53,25 @@ public class CartService {
     public void setAddress(String address) {
         this.address = address;
     }
+
+    public void add(Product product) {
+        for (OrderItem i : items) {
+            if (i.getProduct().getId().equals(product.getId())) {
+                i.increment();
+                recalculate();
+                return;
+            }
+        }
+
+        items.add(new OrderItem(product));
+        recalculate();
+    }
+
+    public void recalculate() {
+        price = new BigDecimal(0.0);
+        items.stream().forEach(orderItem ->
+                price = price.add(orderItem.getPrice())
+        );
+    }
+
 }
