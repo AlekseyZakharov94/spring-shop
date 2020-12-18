@@ -1,10 +1,12 @@
 package com.geekbrains.controllers.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 
 @Data
+@Builder
 public class UserDto {
 
     @NotNull(message = "Телефон пользователя не может быть пустым.")
