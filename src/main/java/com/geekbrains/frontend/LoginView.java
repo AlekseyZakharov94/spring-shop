@@ -1,5 +1,7 @@
 package com.geekbrains.frontend;
 
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -20,7 +22,12 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         setJustifyContentMode(JustifyContentMode.CENTER);
 
         loginForm.setAction("login");
-        add(new H1("Vaadin Shop"), loginForm);
+        Button registrationButton = new Button("Регистрация", a -> {
+            UI.getCurrent().navigate("registration");
+        });
+        registrationButton.setSizeUndefined();
+
+        add(new H1("Vaadin Shop"), loginForm, registrationButton);
     }
 
     @Override

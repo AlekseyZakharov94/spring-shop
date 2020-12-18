@@ -56,11 +56,16 @@ insert into users (phone, password, first_name, last_name, email)
 values
 ('admin','$2y$12$rxg3cYnpaZsNwAVuaiKZXeDb69dR.h9foNdfARmOp/9UBRLymKV22','admin','admin','admin@gmail.com');
 
+insert into users (phone, password, first_name, last_name, email)
+values
+('customer','$2y$12$7Ro2aS3VbhLu0cjgV5ORZewpV.5mIT.pwnsZDD4GEyc1e5YpCiX1K','customer','customer','customer@gmail.com');
+
 insert into users_roles (user_id, role_id)
 values
 (1, 1),
 (1, 2),
-(1, 3);
+(1, 3),
+(2, 1);
 
 drop table if exists orders cascade;
 create table orders (id bigserial, user_id bigint not null, price numeric(8, 2) not null, status varchar(32), address varchar (255) not null, phone_number varchar(30) not null, primary key(id), constraint fk_user_id foreign key (user_id) references users (id));

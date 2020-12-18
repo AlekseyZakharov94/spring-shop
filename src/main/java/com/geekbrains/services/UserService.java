@@ -8,6 +8,7 @@ import com.geekbrains.exceptions.ManagerIsEarlierThanNeedException;
 import com.geekbrains.exceptions.UnknownUserTypeException;
 import com.geekbrains.exceptions.UserNotFoundException;
 import com.geekbrains.repositories.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -83,5 +84,24 @@ public class UserService {
     public User findById(Long id) {
         return userRepository.findById(id).
                 orElseThrow(() -> new UserNotFoundException(String.format("Пользователь с идентификатором %s не найден", id)));
+    }
+
+    public User saveUser(String phone, String password, String firstName, String lastName, String email, String age) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        User user = User.builder()
+                .phone(phone)
+                .password(encoder.encode(password))
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .age(Integer.valueOf(age))
+                .build();
+        return userRepository.save(user);
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByPhone(username)
+                .orElseThrow(() -> new UserNotFoundException(String.format("Пользователь с именем %s не найден", username)));
     }
 }

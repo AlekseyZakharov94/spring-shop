@@ -20,6 +20,11 @@ public class OrderItem {
     private BigDecimal price;
     private int quantity;
 
+    @Override
+    public String toString() {
+        return product.getTitle();
+    }
+
     public OrderItem() {}
 
     public OrderItem(Product product) {

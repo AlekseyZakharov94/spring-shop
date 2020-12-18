@@ -17,6 +17,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.*;
 
@@ -25,6 +27,7 @@ public class MarketView extends AbstractView {
 
     private final CartService cartService;
     private final ProductRepository productRepository;
+    private final Authentication authentication;
 
     private TextField titleTextField;
     private TextField minPriceTextField;
@@ -35,6 +38,7 @@ public class MarketView extends AbstractView {
     public MarketView(CartService cartService, ProductRepository productRepository) {
         this.cartService = cartService;
         this.productRepository = productRepository;
+        this.authentication = SecurityContextHolder.getContext().getAuthentication();
         initMarketPage();
     }
 
@@ -43,6 +47,11 @@ public class MarketView extends AbstractView {
         horizontalLayout.add(new Button("Главная", a -> UI.getCurrent().navigate("market")));
         horizontalLayout.add(new Button("Корзина", a -> UI.getCurrent().navigate("cart")));
         horizontalLayout.add(new Button("Мои заказы", a -> UI.getCurrent().navigate("orders")));
+
+        Button otherOrdersButton = new Button("Заказы пользователей", e -> UI.getCurrent().navigate("other-orders"));
+       if (isManagerOrAdmin()) {
+           horizontalLayout.add(otherOrdersButton);
+       }
 
 
         productGrid = new Grid<>(Product.class);
@@ -64,6 +73,11 @@ public class MarketView extends AbstractView {
             productSet.stream().forEach(cartService::add);
             Notification.show("Товары добавлены в корзину");
         }));
+    }
+
+    private boolean isManagerOrAdmin() {
+        return authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER") ||
+                a.getAuthority().equals("ROLE_ADMIN"));
     }
 
     private Component initFilterComponent() {

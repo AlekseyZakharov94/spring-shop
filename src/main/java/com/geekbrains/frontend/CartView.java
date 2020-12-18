@@ -61,6 +61,7 @@ public class CartView extends AbstractView {
         });
 
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+        setAlignItems(Alignment.CENTER);
         add(grid, addressField, phoneField, toOrderButton);
     }
 
