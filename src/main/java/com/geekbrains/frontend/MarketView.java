@@ -49,19 +49,23 @@ public class MarketView extends AbstractView {
         horizontalLayout.add(new Button("Мои заказы", a -> UI.getCurrent().navigate("orders")));
 
         Button otherOrdersButton = new Button("Заказы пользователей", e -> UI.getCurrent().navigate("other-orders"));
-       if (isManagerOrAdmin()) {
-           horizontalLayout.add(otherOrdersButton);
-       }
+        if (isManagerOrAdmin()) {
+            horizontalLayout.add(otherOrdersButton);
+        }
 
-       horizontalLayout.add(new Button("Выйти", a -> {
-           SecurityContextHolder.clearContext();
-           UI.getCurrent().navigate("login");
-       }));
+        horizontalLayout.add(new Button("Выйти", a -> {
+            SecurityContextHolder.clearContext();
+            UI.getCurrent().navigate("login");
+        }));
 
 
         productGrid = new Grid<>(Product.class);
         productGrid.setWidth("60%");
-        productGrid.setColumns("id", "title", "price");
+        if (isManagerOrAdmin()) {
+            productGrid.setColumns("id", "title", "price", "priceHistories");
+        } else {
+            productGrid.setColumns("id", "title", "price");
+        }
         productGrid.setSelectionMode(Grid.SelectionMode.MULTI);
         List<Product> productList = productRepository.findAll();
         productGrid.setItems(productList);
@@ -115,11 +119,11 @@ public class MarketView extends AbstractView {
                 filterMap.put("max_price", maxPriceTextField.getValue());
             }
 
-            if (foodCheckbox.getValue()){
+            if (foodCheckbox.getValue()) {
                 categories.add("Food");
             }
 
-            if(devicesCheckbox.getValue()){
+            if (devicesCheckbox.getValue()) {
                 categories.add("Devices");
             }
 

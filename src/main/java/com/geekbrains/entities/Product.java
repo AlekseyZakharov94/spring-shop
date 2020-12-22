@@ -26,8 +26,14 @@ public class Product {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "products_categories",
             joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name =  "category_id"))
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> categories;
+
+    @ManyToMany
+    @JoinTable(name = "products_price_history",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "price_history_id"))
+    private List<PriceHistory> priceHistories;
 
     @Override
     public String toString() {

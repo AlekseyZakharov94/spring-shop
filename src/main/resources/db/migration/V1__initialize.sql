@@ -79,3 +79,15 @@ create table order_items(id bigserial, order_id bigint not null, item_id bigint 
 
 alter table users add column age integer;
 
+drop table if exists price_history cascade;
+create table price_history(id bigserial, date_of_change varchar(255), price numeric(8, 2), primary key(id));
+insert into price_history
+(date_of_change, price) values
+('10.10.2010', 70.0),
+('10.10.2011', 80.0);
+
+drop table if exists products_price_history cascade;
+create table products_price_history (product_id bigint not null, price_history_id bigint not null, primary key(product_id, price_history_id),
+foreign key (product_id) references products(id), foreign key (price_history_id) references price_history(id));
+insert into products_categories (product_id, price_history_id) values (1, 1), (1, 2), (2, 1), (2, 2);
+
