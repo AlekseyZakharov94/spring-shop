@@ -104,4 +104,8 @@ public class UserService {
         return userRepository.findByPhone(username)
                 .orElseThrow(() -> new UserNotFoundException(String.format("Пользователь с именем %s не найден", username)));
     }
+
+    public void updateUser(User user) {
+        userRepository.save(user);
+    }
 }

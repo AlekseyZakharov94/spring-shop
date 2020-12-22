@@ -3,6 +3,7 @@ package com.geekbrains.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -25,6 +26,7 @@ public class User {
     private String lastName;
     private String email;
     private Integer age;
+    private BigDecimal money;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",

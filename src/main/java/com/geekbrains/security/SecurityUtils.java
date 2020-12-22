@@ -23,4 +23,8 @@ public class SecurityUtils {
                 && !(authentication instanceof AnonymousAuthenticationToken)
                 && authentication.isAuthenticated();
     }
+
+    public static CustomPrincipal getPrincipal() {
+        return ((CustomPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    }
 }

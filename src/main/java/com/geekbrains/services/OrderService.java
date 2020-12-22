@@ -6,6 +6,7 @@ import com.geekbrains.entities.User;
 import com.geekbrains.repositories.OrderItemRepository;
 import com.geekbrains.repositories.OrderRepository;
 import com.geekbrains.security.CustomPrincipal;
+import com.geekbrains.security.SecurityUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,6 @@ public class OrderService {
     private final CartService cartService;
     private final UserService userService;
     private final OrderItemRepository orderItemRepository;
-    private final Authentication authentication;
 
     public OrderService(OrderRepository orderRepository,
                         CartService cartService,
@@ -30,12 +30,11 @@ public class OrderService {
         this.cartService = cartService;
         this.userService = userService;
         this.orderItemRepository = orderItemRepository;
-        this.authentication = SecurityContextHolder.getContext().getAuthentication();
     }
 
     @Log
     public void saveOrder() {
-        User user = userService.findByUsername(((CustomPrincipal)authentication.getPrincipal()).getUsername());
+        User user = userService.findByUsername(SecurityUtils.getPrincipal().getUsername());
 
         Order order = new Order();
         order.setItems(cartService.getItems());
@@ -54,4 +53,14 @@ public class OrderService {
         return orderRepository.findAllByUserId(userId);
     }
 
+    public List<Order> getByUserNAme(String username) { return orderRepository.findAllByUser_Phone(username);
+    }
+
+    public List<Order> findAll() {
+        return orderRepository.findAll();
+    }
+
+    public void saveAll(List<Order> orders) {
+        orderRepository.saveAll(orders);
+    }
 }

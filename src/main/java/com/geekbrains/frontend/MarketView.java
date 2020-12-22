@@ -53,6 +53,11 @@ public class MarketView extends AbstractView {
            horizontalLayout.add(otherOrdersButton);
        }
 
+       horizontalLayout.add(new Button("Выйти", a -> {
+           SecurityContextHolder.clearContext();
+           UI.getCurrent().navigate("login");
+       }));
+
 
         productGrid = new Grid<>(Product.class);
         productGrid.setWidth("60%");
